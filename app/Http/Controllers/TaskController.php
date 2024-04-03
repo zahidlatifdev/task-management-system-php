@@ -7,6 +7,12 @@ use App\Models\Task;
 
 class TaskController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $tasks = Task::where('completed', false)->orderBy('priority','desc')->orderBy('due_date')->get();
@@ -26,14 +32,20 @@ class TaskController extends Controller
             'description' => 'required|max:255',
             'priority' => 'required|in:low,medium,high',
             'due_date' => 'required|max:255',
-        ]);
+            'organization_id' => 'sometimes|integer',
+        ]);        
 
-        Task::create([
+        $taskData = [
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'priority' => $request->input('priority'),
             'due_date' => $request->input('due_date'),
-        ]);
+            'user_id' => $request->user()->id,
+        ];
+        if($request->input('organization_id') !== null){
+            $taskData['organization_id'] = $request->input('organization_id');
+        }
+        Task::create($taskData);
 
         return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
 

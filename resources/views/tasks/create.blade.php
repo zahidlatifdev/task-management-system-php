@@ -2,6 +2,18 @@
 
 <body>
     <div class="container">
+
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
         <h1>Create Task</h1>
         <form action="{{ route('tasks.store') }}" method="POST">
             @csrf
@@ -25,6 +37,8 @@
                 <label for="due_date">Due Date</label>
                 <input type="date" id="due_date" name="due_date">
             </div>
+
+            <input type="hidden" name="organization_id" value="{{ auth()->user()->organization_id }}">
             <button type="submit"><i class="fas fa-plus-circle"></i> Create Task</button>
         </form>
     </div>
